@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>도둑을 잡아라</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #020617 60%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+      padding: 16px 18px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .status-box {
+      text-align: right;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .status-box span.label {
+      color: #9ca3af;
+    }
+    .status-box span.value {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+    .combo-tag {
+      margin-top: 2px;
+      font-size: 11px;
+      color: #fbbf24;
+      font-weight: 600;
+      min-height: 14px;
+    }
+    .combo-tag.hidden {
+      opacity: 0;
+    }
+
+    .grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px;
+      background: radial-gradient(circle at top, #020617, #020617 40%, #000 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+    .cell {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #020617, #0b1220);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, border-color 0.1s ease;
+    }
+    .cell:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.7);
+      border-color: rgba(148, 163, 184, 0.8);
+    }
+    .window-inner {
+      position: absolute;
+      inset: 3px;
+      border-radius: 7px;
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 5px;
+      overflow: hidden;
+    }
+    .window-glass {
+      position: absolute;
+      inset: 0;
+      border-radius: 7px;
+      box-shadow: inset 0 0 20px rgba(15, 23, 42, 0.9);
+      opacity: 0.9;
+    }
+    .window-frame {
+      position: absolute;
+      inset: 0;
+      border-radius: 7px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+    .window-bar {
+      position: absolute;
+      inset: 0;
+    }
+    .window-bar::before,
+    .window-bar::after {
+      content: "";
+      position: absolute;
+      background: rgba(15, 23, 42, 0.9);
+    }
+    .window-bar::before {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      transform: translateX(-0.5px);
+    }
+    .window-bar::after {
+      height: 1px;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-0.5px);
+    }
+
+    /* 도둑 이미지 컨테이너 */
+    .thief {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .thief-img {
+      width: 70%;
+      max-width: 80px;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.12s ease-out, opacity 0.12s ease-out;
+      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.9));
+    }
+    .cell.active-normal .thief-img {
+      opacity: 1;
+      transform: translateY(10%);
+    }
+    .cell.active-fast .thief-img {
+      opacity: 1;
+      transform: translateY(5%);
+    }
+    .cell.active-normal .window-glass {
+      box-shadow: inset 0 0 22px rgba(59, 130, 246, 0.9);
+    }
+    .cell.active-fast .window-glass {
+      box-shadow: inset 0 0 24px rgba(248, 113, 113, 0.95);
+    }
+
+    .info-panel {
+      margin-top: 10px;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      color: #9ca3af;
+    }
+    .info-panel span strong {
+      color: #e5e7eb;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+    .status-text {
+      color: #9ca3af;
+      line-height: 1.4;
+      min-height: 30px;
+    }
+    .buttons {
+      display: flex;
+      gap: 6px;
+    }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #1d4ed8;
+      color: #e5e7eb;
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+      transition: background 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease, opacity 0.1s ease;
+    }
+    button:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.5);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+    }
+    .btn-secondary {
+      background: #374151;
+      box-shadow: 0 6px 12px rgba(15, 23, 42, 0.8);
+    }
+    .btn-secondary:hover {
+      background: #4b5563;
+      box-shadow: 0 10px 18px rgba(15, 23, 42, 0.9);
+    }
+    .btn-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 엔딩 모달 */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(0, 0, 0, 0.95));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 20;
+    }
+    .overlay.visible {
+      display: flex;
+    }
+    .modal {
+      width: 100%;
+      max-width: 320px;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+      padding: 16px 16px 14px;
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .modal-rank {
+      font-size: 12px;
+      color: #facc15;
+      margin-bottom: 8px;
+    }
+    .modal-score {
+      font-size: 13px;
+      color: #e5e7eb;
+      margin-bottom: 6px;
+    }
+    .modal-msg {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 6px;
+    }
+    .share-hint {
+      margin-top: 4px;
+      font-size: 10px;
+      color: #6b7280;
+      min-height: 12px;
+    }
+
+    @media (max-width: 420px) {
+      .title {
+        font-size: 18px;
+      }
+      .grid {
+        gap: 6px;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="header">
+      <div class="title-box">
+        <div class="title">도둑을 잡아라</div>
+        <div class="subtitle">창문 뒤로 지나가는 도둑을 빠르게 찾아 클릭하세요.</div>
+      </div>
+      <div class="status-box">
+        <div><span class="label">점수</span> <span class="value" id="scoreDisplay">0</span></div>
+        <div><span class="label">최고</span> <span class="value" id="bestDisplay">0</span></div>
+        <div><span class="label">라이프</span> <span class="value" id="lifeDisplay">♥♥♥</span></div>
+      </div>
+    </div>
+    <div class="combo-tag hidden" id="comboTag">COMBO x0</div>
+
+    <div class="grid" id="grid">
+      <!-- 9개 창문 -->
+      <!-- 공통 구조: thief-normal.png로 시작 -->
+      <!-- data-index만 0~8로 다르게 -->
+      <!-- 0 -->
+      <div class="cell" data-index="0">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 1 -->
+      <div class="cell" data-index="1">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="cell" data-index="2">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="cell" data-index="3">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="cell" data-index="4">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="cell" data-index="5">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="cell" data-index="6">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 7 -->
+      <div class="cell" data-index="7">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+      <!-- 8 -->
+      <div class="cell" data-index="8">
+        <div class="window-inner">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+          <div class="window-bar"></div>
+          <div class="thief">
+            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <span>현재 난이도: <strong id="levelDisplay">연습 구간</strong></span>
+      <span>등장한 도둑 수: <strong id="spawnCountDisplay">0</strong></span>
+    </div>
+
+    <div class="controls">
+      <div class="status-text" id="statusText">
+        시작 버튼을 누르면 도둑이 무작위 창문에 나타납니다.
+      </div>
+      <div class="buttons">
+        <button id="startBtn">게임 시작</button>
+        <button id="retryBtn" class="btn-secondary btn-hidden">다시 하기</button>
+      </div>
+    </div>
+
+    <!-- 엔딩 오버레이 -->
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <div class="modal-title" id="modalTitle">게임 종료</div>
+        <div class="modal-rank" id="modalRank">Rank: C</div>
+        <div class="modal-score" id="modalScore">최종 점수: 0점 (최고 기록: 0점)</div>
+        <div class="modal-msg" id="modalMsg">
+          점수에 따라 다른 엔딩 메시지가 표시됩니다.
+        </div>
+        <div class="modal-footer">
+          <div class="modal-buttons">
+            <button id="modalRetryBtn">다시 하기</button>
+            <button id="shareBtn" class="btn-secondary">결과 공유하기</button>
+          </div>
+        </div>
+        <div class="share-hint" id="shareHint"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ----- 상태 변수 -----
+    let gameState = "ready"; // ready, playing, gameover
+    let score = 0;
+    let bestScore = 0;
+    let lives = 3;
+    const maxLives = 3;
+    let combo = 0;
+    let spawnCount = 0;
+
+    let activeIndex = null;
+    let activeType = null; // "normal" | "fast"
+    let visibleTimeoutId = null;
+    let spawnTimeoutId = null;
+
+    // ----- DOM -----
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const bestDisplay = document.getElementById("bestDisplay");
+    const lifeDisplay = document.getElementById("lifeDisplay");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const spawnCountDisplay = document.getElementById("spawnCountDisplay");
+    const statusText = document.getElementById("statusText");
+    const startBtn = document.getElementById("startBtn");
+    const retryBtn = document.getElementById("retryBtn");
+    const comboTag = document.getElementById("comboTag");
+
+    const overlay = document.getElementById("overlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalRank = document.getElementById("modalRank");
+    const modalScore = document.getElementById("modalScore");
+    const modalMsg = document.getElementById("modalMsg");
+    const modalRetryBtn = document.getElementById("modalRetryBtn");
+    const shareBtn = document.getElementById("shareBtn");
+    const shareHint = document.getElementById("shareHint");
+
+    const cells = Array.from(document.querySelectorAll(".cell"));
+
+    // ----- 로컬 최고 기록 -----
+    function loadBestScore() {
+      const saved = localStorage.getItem("thief_best_score");
+      bestScore = saved ? Number(saved) : 0;
+      bestDisplay.textContent = bestScore;
+    }
+    function saveBestScore() {
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("thief_best_score", String(bestScore));
+        bestDisplay.textContent = bestScore;
+        return true;
+      }
+      return false;
+    }
+
+    loadBestScore();
+
+    // ----- 라이프 표시 -----
+    function renderLives() {
+      const full = "♥".repeat(lives);
+      const empty = "♡".repeat(maxLives - lives);
+      lifeDisplay.textContent = full + empty;
+    }
+
+    // ----- 난이도 곡선 -----
+    function getDifficulty(score) {
+      if (score < 10) {
+        return {
+          label: "연습 구간",
+          spawnInterval: 900,
+          visibleTimeNormal: 800,
+          visibleTimeFast: 500,
+          fastChance: 0.2
+        };
+      } else if (score < 20) {
+        return {
+          label: "초급",
+          spawnInterval: 850,
+          visibleTimeNormal: 650,
+          visibleTimeFast: 400,
+          fastChance: 0.25
+        };
+      } else if (score < 30) {
+        return {
+          label: "중급",
+          spawnInterval: 800,
+          visibleTimeNormal: 550,
+          visibleTimeFast: 350,
+          fastChance: 0.3
+        };
+      } else if (score < 40) {
+        return {
+          label: "상급",
+          spawnInterval: 750,
+          visibleTimeNormal: 450,
+          visibleTimeFast: 300,
+          fastChance: 0.35
+        };
+      } else {
+        return {
+          label: "전설의 구간",
+          spawnInterval: 700,
+          visibleTimeNormal: 380,
+          visibleTimeFast: 260,
+          fastChance: 0.4
+        };
+      }
+    }
+
+    function updateDifficultyLabel() {
+      const diff = getDifficulty(score);
+      levelDisplay.textContent = diff.label;
+    }
+
+    // ----- 콤보 표시 -----
+    function updateComboDisplay() {
+      if (combo >= 2) {
+        comboTag.textContent = "COMBO x" + combo;
+        comboTag.classList.remove("hidden");
+      } else {
+        comboTag.classList.add("hidden");
+      }
+    }
+
+    // ----- 셀 초기화 -----
+    function resetCells() {
+      cells.forEach(cell => {
+        cell.classList.remove("active-normal", "active-fast");
+        const img = cell.querySelector(".thief-img");
+        if (img) {
+          img.src = "images/thief-normal.png";
+        }
+      });
+      activeIndex = null;
+      activeType = null;
+    }
+
+    function resetGameState() {
+      clearTimeout(visibleTimeoutId);
+      clearTimeout(spawnTimeoutId);
+      visibleTimeoutId = null;
+      spawnTimeoutId = null;
+      score = 0;
+      combo = 0;
+      lives = maxLives;
+      spawnCount = 0;
+      resetCells();
+      renderLives();
+      scoreDisplay.textContent = "0";
+      spawnCountDisplay.textContent = "0";
+      updateDifficultyLabel();
+      updateComboDisplay();
+      statusText.textContent = "도둑이 나타났다가 사라지기 전에 창문을 클릭해 잡으세요.";
+    }
+
+    // ----- 점수 계산 -----
+    function getComboBonus(combo) {
+      if (combo >= 5) return 2;
+      if (combo >= 3) return 1;
+      return 0;
+    }
+
+    function handleSuccessHit(type) {
+      const baseScore = type === "fast" ? 3 : 1;
+      combo += 1;
+      const bonus = getComboBonus(combo);
+      const gained = baseScore + bonus;
+      score += gained;
+
+      scoreDisplay.textContent = score;
+      updateComboDisplay();
+      updateDifficultyLabel();
+
+      statusText.textContent = `적중! +${gained}점 (기본 ${baseScore} / 콤보 보너스 ${bonus})`;
+    }
+
+    function handleMiss() {
+      combo = 0;
+      updateComboDisplay();
+      lives = Math.max(0, lives - 1);
+      renderLives();
+      statusText.textContent = "놓쳤습니다! 라이프가 줄어들었습니다.";
+    }
+
+    function handleWrongClick() {
+      combo = 0;
+      updateComboDisplay();
+      lives = Math.max(0, lives - 1);
+      renderLives();
+      statusText.textContent = "틀린 창문을 클릭했습니다. 라이프가 줄어들었습니다.";
+    }
+
+    // ----- 도둑 등장 / 사라짐 -----
+    function scheduleNextSpawn(delay) {
+      clearTimeout(spawnTimeoutId);
+      spawnTimeoutId = setTimeout(() => {
+        if (gameState !== "playing") return;
+        spawnThief();
+      }, delay);
+    }
+
+    function clearActiveAndScheduleNext() {
+      resetCells();
+      if (gameState === "playing") {
+        const diff = getDifficulty(score);
+        scheduleNextSpawn(diff.spawnInterval);
+      }
+    }
+
+    function spawnThief() {
+      if (gameState !== "playing") return;
+
+      resetCells();
+
+      const diff = getDifficulty(score);
+
+      const isFast = Math.random() < diff.fastChance;
+      activeType = isFast ? "fast" : "normal";
+
+      let idx = Math.floor(Math.random() * cells.length);
+      activeIndex = idx;
+
+      const cell = cells[idx];
+      const img = cell.querySelector(".thief-img");
+      if (isFast) {
+        cell.classList.add("active-fast");
+        if (img) img.src = "images/thief-fast.png";
+      } else {
+        cell.classList.add("active-normal");
+        if (img) img.src = "images/thief-normal.png";
+      }
+
+      spawnCount += 1;
+      spawnCountDisplay.textContent = spawnCount;
+
+      const visibleTime = isFast ? diff.visibleTimeFast : diff.visibleTimeNormal;
+
+      clearTimeout(visibleTimeoutId);
+      visibleTimeoutId = setTimeout(() => {
+        if (activeIndex !== null) {
+          handleMiss();
+          checkGameOverOrContinue();
+        }
+      }, visibleTime);
+    }
+
+    // ----- 게임 흐름 -----
+    function startGame() {
+      if (gameState === "playing") return;
+      resetGameState();
+      gameState = "playing";
+      startBtn.classList.add("btn-hidden");
+      retryBtn.classList.add("btn-hidden");
+      statusText.textContent = "도둑이 나타나면 바로 클릭하세요. 실수하면 라이프가 줄어듭니다.";
+      spawnThief();
+    }
+
+    function endGame() {
+      gameState = "gameover";
+      clearTimeout(visibleTimeoutId);
+      clearTimeout(spawnTimeoutId);
+      resetCells();
+      startBtn.classList.remove("btn-hidden");
+      retryBtn.classList.remove("btn-hidden");
+      showEndingModal();
+    }
+
+    function checkGameOverOrContinue() {
+      if (lives <= 0) {
+        endGame();
+      } else {
+        clearActiveAndScheduleNext();
+      }
+    }
+
+    // ----- 엔딩 분기 -----
+    function getEndingInfo(score) {
+      let title, msg, rank;
+      if (score < 10) {
+        title = "도둑잡기에 실패했습니다.";
+        msg = "도시가 완전히 도둑 소굴이 되었습니다. 다음에는 좀 더 빠르게 반응해 보세요.";
+        rank = "F";
+      } else if (score < 20) {
+        title = "아깝게 놓쳤습니다.";
+        msg = "몇 명의 도둑은 잡았지만, 아직도 거리는 위험합니다. 조금만 더 연습해 볼까요?";
+        rank = "C";
+      } else if (score < 30) {
+        title = "도시는 조금 더 안전해졌습니다.";
+        msg = "도둑들을 꽤 많이 잡았습니다. 시민들이 안도하고 있습니다.";
+        rank = "B";
+      } else if (score < 40) {
+        title = "오늘의 히어로입니다!";
+        msg = "대부분의 도둑을 검거했습니다. 사람들의 환호성이 들리는 것 같아요.";
+        rank = "A";
+      } else {
+        title = "전설의 도둑잡이 탄생!";
+        msg = "완벽한 수사였습니다. 당신의 이름은 전설로 기록될 것입니다.";
+        rank = "S";
+      }
+      return { title, msg, rank };
+    }
+
+    function showEndingModal() {
+      const bestUpdated = saveBestScore();
+      const ending = getEndingInfo(score);
+
+      modalTitle.textContent = ending.title;
+      modalRank.textContent = "Rank: " + ending.rank;
+      modalScore.textContent =
+        `최종 점수: ${score}점 (최고 기록: ${bestScore}점${bestUpdated ? " - 기록 갱신!" : ""})`;
+      modalMsg.textContent = ending.msg;
+      shareHint.textContent = "";
+
+      overlay.classList.add("visible");
+    }
+
+    function hideEndingModal() {
+      overlay.classList.remove("visible");
+    }
+
+    // ----- 공유하기 -----
+    function getShareText() {
+      const ending = getEndingInfo(score);
+      const url = window.location.href;
+      return `[도둑을 잡아라 결과]\n` +
+             `점수: ${score}점\n` +
+             `랭크: ${ending.rank}\n` +
+             `${ending.title}\n\n` +
+             `당신도 도전해 보세요: ${url}`;
+    }
+
+    async function shareResult() {
+      const text = getShareText();
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "도둑을 잡아라",
+            text,
+            url: window.location.href
+          });
+          shareHint.textContent = "공유 창이 열렸습니다. 친구에게 결과를 자랑해 보세요.";
+        } catch (err) {
+          shareHint.textContent = "공유가 취소되었습니다.";
+        }
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          shareHint.textContent =
+            "결과가 클립보드에 복사되었습니다. 친구에게 붙여넣기해서 공유해 보세요.";
+        } catch (err) {
+          shareHint.textContent =
+            "클립보드 복사에 실패했습니다. 브라우저 보안 설정을 확인해 주세요.";
+        }
+      } else {
+        shareHint.textContent =
+          "이 브라우저에서는 자동 복사가 어렵습니다. 결과를 직접 캡처해서 공유해 주세요.";
+      }
+    }
+
+    // ----- 이벤트 -----
+    startBtn.addEventListener("click", () => {
+      if (gameState === "gameover") {
+        hideEndingModal();
+      }
+      startGame();
+    });
+
+    retryBtn.addEventListener("click", () => {
+      if (gameState === "gameover") {
+        hideEndingModal();
+      }
+      startGame();
+    });
+
+    modalRetryBtn.addEventListener("click", () => {
+      hideEndingModal();
+      startGame();
+    });
+
+    shareBtn.addEventListener("click", () => {
+      shareResult();
+    });
+
+    cells.forEach(cell => {
+      cell.addEventListener("click", () => {
+        if (gameState !== "playing") return;
+
+        const idx = Number(cell.getAttribute("data-index"));
+
+        if (activeIndex !== null && idx === activeIndex) {
+          clearTimeout(visibleTimeoutId);
+          handleSuccessHit(activeType);
+          activeIndex = null;
+          activeType = null;
+          checkGameOverOrContinue();
+        } else {
+          handleWrongClick();
+          if (lives <= 0) {
+            endGame();
+          }
+        }
+      });
+    });
+
+    // 초기 상태 렌더링
+    renderLives();
+    updateDifficultyLabel();
+    updateComboDisplay();
+  </script>
+</body>
+</html>

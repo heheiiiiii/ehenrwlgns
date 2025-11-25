@@ -12,7 +12,7 @@
     }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f3f4f6; /* 밝은 배경 */
+      background: linear-gradient(to bottom, #e5e7eb 0%, #f9fafb 35%, #e5e7eb 100%);
       color: #111827;
       min-height: 100vh;
       display: flex;
@@ -20,17 +20,48 @@
       justify-content: center;
       padding: 16px;
     }
+
+    /* 건물 전체 느낌 */
+    .building-wrapper {
+      padding: 10px 10px 16px;
+      background: linear-gradient(to bottom, #1f2937 0%, #111827 35%, #030712 100%);
+      border-radius: 24px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(15, 23, 42, 0.9);
+    }
+    .building-roof {
+      height: 14px;
+      border-radius: 16px 16px 4px 4px;
+      background: linear-gradient(to right, #0f172a, #111827, #020617);
+      margin-bottom: 6px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .building-roof::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.35), transparent 60%);
+      opacity: 0.8;
+    }
+    .building-body {
+      background: linear-gradient(145deg, #111827, #020617);
+      border-radius: 18px;
+      padding: 1px;
+    }
+
     .game-container {
       width: 100%;
       max-width: 420px;
       background: #ffffff;
-      border-radius: 18px;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      border-radius: 16px;
+      border: 1px solid #1f2937;
       padding: 16px 18px 18px;
       position: relative;
       overflow: hidden;
     }
+
     .header {
       display: flex;
       justify-content: space-between;
@@ -64,47 +95,46 @@
       font-weight: 600;
       color: #111827;
     }
-    .combo-tag {
+    .difficulty-line {
       margin-top: 2px;
-      font-size: 11px;
-      color: #b45309;
-      font-weight: 600;
-      min-height: 14px;
     }
-    .combo-tag.hidden {
-      opacity: 0;
+
+    .grid-wrapper {
+      margin-top: 6px;
+      padding: 10px;
+      border-radius: 14px;
+      background: linear-gradient(to bottom, #111827 0%, #020617 100%);
+      border: 1px solid #020617;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
     }
 
     .grid {
-      margin-top: 8px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      padding: 10px;
-      background: #e5e7eb;
-      border-radius: 16px;
-      border: 1px solid #d1d5db;
     }
+
     .cell {
       position: relative;
       aspect-ratio: 1 / 1;
       border-radius: 10px;
-      background: linear-gradient(145deg, #e5e7eb, #f9fafb);
-      border: 1px solid #d1d5db;
+      background: #020617;
+      border: 1px solid #020617;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.06s ease, box-shadow 0.06s ease, border-color 0.1s ease;
     }
     .cell:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(148, 163, 184, 0.5);
-      border-color: #9ca3af;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.7);
+      border-color: #1f2937;
     }
+
     .window-inner {
       position: absolute;
       inset: 3px;
       border-radius: 7px;
-      background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 40%, #e5e7eb 100%);
+      background: radial-gradient(circle at top, #0b1120 0%, #020617 45%, #020617 100%);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -115,14 +145,14 @@
       position: absolute;
       inset: 0;
       border-radius: 7px;
-      box-shadow: inset 0 0 16px rgba(148, 163, 184, 0.8);
-      opacity: 0.9;
+      box-shadow: inset 0 0 16px rgba(15, 23, 42, 0.9);
+      opacity: 0.85;
     }
     .window-frame {
       position: absolute;
       inset: 0;
       border-radius: 7px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.6);
     }
     .window-bar {
       position: absolute;
@@ -132,7 +162,7 @@
     .window-bar::after {
       content: "";
       position: absolute;
-      background: rgba(148, 163, 184, 0.9);
+      background: rgba(15, 23, 42, 0.9);
     }
     .window-bar::before {
       width: 1px;
@@ -147,6 +177,7 @@
       transform: translateY(-0.5px);
     }
 
+    /* 도둑/시민 이미지 */
     .thief {
       position: relative;
       width: 100%;
@@ -162,36 +193,34 @@
       transform: translateY(100%);
       opacity: 0;
       transition: transform 0.12s ease-out, opacity 0.12s ease-out;
-      filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.5));
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
     }
-    .cell.active-normal .thief-img {
+
+    .cell.type-thief .thief-img {
       opacity: 1;
       transform: translateY(10%);
     }
-    .cell.active-fast .thief-img {
+    .cell.type-citizen .thief-img {
       opacity: 1;
       transform: translateY(5%);
     }
-    .cell.active-normal .window-glass {
-      box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.9);
+
+    /* 도둑: 빨간 불, 시민: 파란 불 */
+    .cell.type-thief .window-glass {
+      box-shadow: inset 0 0 24px rgba(239, 68, 68, 0.95);
     }
-    .cell.active-fast .window-glass {
-      box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.9);
+    .cell.type-citizen .window-glass {
+      box-shadow: inset 0 0 24px rgba(59, 130, 246, 0.95);
     }
 
     .info-panel {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 11px;
-      display: flex;
-      justify-content: space-between;
       color: #6b7280;
-    }
-    .info-panel span strong {
-      color: #111827;
     }
 
     .controls {
-      margin-top: 10px;
+      margin-top: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -241,11 +270,17 @@
       pointer-events: none;
     }
 
+    /* 게임 시작 버튼은 더 넓게 */
+    #startBtn {
+      padding: 8px 26px;
+      min-width: 110px;
+    }
+
     /* 엔딩 모달 */
     .overlay {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.85));
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.9));
       display: none;
       align-items: center;
       justify-content: center;
@@ -261,44 +296,58 @@
       background: #ffffff;
       border-radius: 18px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
-      padding: 16px 16px 14px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+      padding: 18px 16px 16px;
+      text-align: center;
     }
     .modal-title {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       color: #111827;
     }
     .modal-rank {
-      font-size: 12px;
+      font-size: 15px;
+      font-weight: 700;
       color: #b45309;
       margin-bottom: 8px;
+    }
+    .ending-image {
+      width: 120px;
+      max-width: 60%;
+      height: auto;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.5);
+      margin: 4px auto 10px;
+      background: #020617;
     }
     .modal-score {
       font-size: 13px;
       color: #111827;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .modal-msg {
       font-size: 12px;
       color: #4b5563;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       line-height: 1.5;
     }
     .modal-footer {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       gap: 8px;
       margin-top: 4px;
     }
     .modal-buttons {
       display: flex;
-      gap: 6px;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
     .share-hint {
-      margin-top: 4px;
+      margin-top: 6px;
       font-size: 10px;
       color: #9ca3af;
       min-height: 12px;
@@ -310,169 +359,173 @@
       }
       .grid {
         gap: 6px;
-        padding: 8px;
+      }
+      .modal-buttons {
+        flex-direction: column;
+      }
+      .modal-buttons button {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="game-container">
-    <div class="header">
-      <div class="title-box">
-        <div class="title">도둑을 잡아라</div>
-        <div class="subtitle">창문 뒤로 지나가는 도둑을 빠르게 찾아 클릭하세요.</div>
-      </div>
-      <div class="status-box">
-        <div><span class="label">점수</span> <span class="value" id="scoreDisplay">0</span></div>
-        <div><span class="label">최고</span> <span class="value" id="bestDisplay">0</span></div>
-        <div><span class="label">라이프</span> <span class="value" id="lifeDisplay">♥♥♥</span></div>
+  <div class="building-wrapper">
+    <div class="building-roof"></div>
+    <div class="building-body">
+      <div class="game-container">
+        <div class="header">
+          <div class="title-box">
+            <div class="title">도둑을 잡아라</div>
+            <div class="subtitle">대저택 창문 사이로 숨어드는 도둑을 찾아 클릭하세요.</div>
+          </div>
+          <div class="status-box">
+            <div><span class="label">점수</span> <span class="value" id="scoreDisplay">0</span></div>
+            <div><span class="label">라이프</span> <span class="value" id="lifeDisplay">♥♥♥</span></div>
+            <div class="difficulty-line">
+              <span class="label">난이도</span>
+              <span class="value" id="levelDisplay">연습 구간</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-wrapper">
+          <div class="grid" id="grid">
+            <!-- 9개 창문 -->
+            <!-- 기본 이미지는 도둑 이미지로, 실제 타입은 JS에서 설정 -->
+            <div class="cell" data-index="0">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="1">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="2">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="3">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="4">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="5">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="6">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="7">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+            <div class="cell" data-index="8">
+              <div class="window-inner">
+                <div class="window-glass"></div>
+                <div class="window-frame"></div>
+                <div class="window-bar"></div>
+                <div class="thief">
+                  <img src="images/thief-normal.png" alt="character" class="thief-img" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-panel">
+          도둑: 빨간 불 (클릭해서 잡기) · 시민: 파란 불 (클릭하면 안 됨)
+        </div>
+
+        <div class="controls">
+          <div class="status-text" id="statusText">
+            시작 버튼을 누르면 창문 사이로 도둑과 시민이 무작위로 나타납니다.
+          </div>
+          <div class="buttons">
+            <button id="startBtn">게임 시작</button>
+            <button id="retryBtn" class="btn-secondary btn-hidden">다시 하기</button>
+          </div>
+        </div>
+
+        <!-- 엔딩 오버레이 -->
+        <div class="overlay" id="overlay">
+          <div class="modal">
+            <div class="modal-title" id="modalTitle">도둑잡기에 실패했습니다</div>
+            <div class="modal-rank" id="modalRank">Rank: F</div>
+            <img id="endingImage" class="ending-image" src="images/thief-normal.png" alt="ending" />
+            <div class="modal-score" id="modalScore">최종 점수: 0점 (최고 기록: 0점)</div>
+            <div class="modal-msg" id="modalMsg">
+              점수에 따라 다른 엔딩 메시지가 표시됩니다.
+            </div>
+            <div class="modal-footer">
+              <div class="modal-buttons">
+                <button id="modalRetryBtn">다시 하기</button>
+                <button id="shareBtn" class="btn-secondary">결과 공유하기</button>
+              </div>
+            </div>
+            <div class="share-hint" id="shareHint"></div>
+          </div>
+        </div>
+
+        <!-- 오디오 (BGM + 효과음) -->
+        <audio id="bgm" src="audio/bgm.mp3" loop></audio>
+        <audio id="sfxHit" src="audio/hit.mp3"></audio>
+        <audio id="sfxMiss" src="audio/miss.mp3"></audio>
       </div>
     </div>
-    <div class="combo-tag hidden" id="comboTag">COMBO x0</div>
-
-    <div class="grid" id="grid">
-      <!-- 9개 창문, 기본 이미지는 일반 도둑 -->
-      <!-- 파일 경로: images/thief-normal.png (소문자/확장자 확인) -->
-      <!-- 0 -->
-      <div class="cell" data-index="0">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 1 -->
-      <div class="cell" data-index="1">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 2 -->
-      <div class="cell" data-index="2">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 3 -->
-      <div class="cell" data-index="3">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 4 -->
-      <div class="cell" data-index="4">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 5 -->
-      <div class="cell" data-index="5">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 6 -->
-      <div class="cell" data-index="6">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 7 -->
-      <div class="cell" data-index="7">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-      <!-- 8 -->
-      <div class="cell" data-index="8">
-        <div class="window-inner">
-          <div class="window-glass"></div>
-          <div class="window-frame"></div>
-          <div class="window-bar"></div>
-          <div class="thief">
-            <img src="images/thief-normal.png" alt="thief" class="thief-img" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-panel">
-      <span>현재 난이도: <strong id="levelDisplay">연습 구간</strong></span>
-      <span>등장한 도둑 수: <strong id="spawnCountDisplay">0</strong></span>
-    </div>
-
-    <div class="controls">
-      <div class="status-text" id="statusText">
-        시작 버튼을 누르면 도둑이 무작위 창문에 나타납니다.
-      </div>
-      <div class="buttons">
-        <button id="startBtn">게임 시작</button>
-        <button id="retryBtn" class="btn-secondary btn-hidden">다시 하기</button>
-      </div>
-    </div>
-
-    <!-- 엔딩 오버레이 -->
-    <div class="overlay" id="overlay">
-      <div class="modal">
-        <div class="modal-title" id="modalTitle">게임 종료</div>
-        <div class="modal-rank" id="modalRank">Rank: C</div>
-        <div class="modal-score" id="modalScore">최종 점수: 0점 (최고 기록: 0점)</div>
-        <div class="modal-msg" id="modalMsg">
-          점수에 따라 다른 엔딩 메시지가 표시됩니다.
-        </div>
-        <div class="modal-footer">
-          <div class="modal-buttons">
-            <button id="modalRetryBtn">다시 하기</button>
-            <button id="shareBtn" class="btn-secondary">결과 공유하기</button>
-          </div>
-        </div>
-        <div class="share-hint" id="shareHint"></div>
-      </div>
-    </div>
-
-    <!-- 오디오 (BGM + 효과음) -->
-    <!-- 파일 경로: /audio/bgm.mp3, hit.mp3, miss.mp3 -->
-    <audio id="bgm" src="audio/bgm.mp3" loop></audio>
-    <audio id="sfxHit" src="audio/hit.mp3"></audio>
-    <audio id="sfxMiss" src="audio/miss.mp3"></audio>
   </div>
 
   <script>
@@ -482,11 +535,9 @@
     let bestScore = 0;
     let lives = 3;
     const maxLives = 3;
-    let combo = 0;
-    let spawnCount = 0;
 
     let activeIndex = null;
-    let activeType = null; // "normal" | "fast"
+    let activeType = null; // "thief" | "citizen"
     let visibleTimeoutId = null;
     let spawnTimeoutId = null;
 
@@ -495,11 +546,9 @@
     const bestDisplay = document.getElementById("bestDisplay");
     const lifeDisplay = document.getElementById("lifeDisplay");
     const levelDisplay = document.getElementById("levelDisplay");
-    const spawnCountDisplay = document.getElementById("spawnCountDisplay");
     const statusText = document.getElementById("statusText");
     const startBtn = document.getElementById("startBtn");
     const retryBtn = document.getElementById("retryBtn");
-    const comboTag = document.getElementById("comboTag");
 
     const overlay = document.getElementById("overlay");
     const modalTitle = document.getElementById("modalTitle");
@@ -509,6 +558,7 @@
     const modalRetryBtn = document.getElementById("modalRetryBtn");
     const shareBtn = document.getElementById("shareBtn");
     const shareHint = document.getElementById("shareHint");
+    const endingImage = document.getElementById("endingImage");
 
     const cells = Array.from(document.querySelectorAll(".cell"));
 
@@ -564,47 +614,42 @@
       lifeDisplay.textContent = full + empty;
     }
 
-    // ----- 난이도 곡선 -----
+    // ----- 난이도 -----
     function getDifficulty(score) {
-      if (score < 10) {
+      if (score < 5) {
         return {
           label: "연습 구간",
           spawnInterval: 900,
-          visibleTimeNormal: 800,
-          visibleTimeFast: 500,
-          fastChance: 0.2
+          visibleTime: 800,
+          thiefChance: 0.6
         };
-      } else if (score < 20) {
+      } else if (score < 15) {
         return {
           label: "초급",
           spawnInterval: 850,
-          visibleTimeNormal: 650,
-          visibleTimeFast: 400,
-          fastChance: 0.25
+          visibleTime: 700,
+          thiefChance: 0.65
         };
-      } else if (score < 30) {
+      } else if (score < 25) {
         return {
           label: "중급",
           spawnInterval: 800,
-          visibleTimeNormal: 550,
-          visibleTimeFast: 350,
-          fastChance: 0.3
+          visibleTime: 600,
+          thiefChance: 0.7
         };
-      } else if (score < 40) {
+      } else if (score < 35) {
         return {
           label: "상급",
           spawnInterval: 750,
-          visibleTimeNormal: 450,
-          visibleTimeFast: 300,
-          fastChance: 0.35
+          visibleTime: 520,
+          thiefChance: 0.75
         };
       } else {
         return {
           label: "전설의 구간",
           spawnInterval: 700,
-          visibleTimeNormal: 380,
-          visibleTimeFast: 260,
-          fastChance: 0.4
+          visibleTime: 450,
+          thiefChance: 0.8
         };
       }
     }
@@ -614,23 +659,13 @@
       levelDisplay.textContent = diff.label;
     }
 
-    // ----- 콤보 표시 -----
-    function updateComboDisplay() {
-      if (combo >= 2) {
-        comboTag.textContent = "COMBO x" + combo;
-        comboTag.classList.remove("hidden");
-      } else {
-        comboTag.classList.add("hidden");
-      }
-    }
-
     // ----- 셀 초기화 -----
     function resetCells() {
       cells.forEach(cell => {
-        cell.classList.remove("active-normal", "active-fast");
+        cell.classList.remove("type-thief", "type-citizen");
         const img = cell.querySelector(".thief-img");
         if (img) {
-          img.src = "images/thief-normal.png"; // 기본 이미지는 일반 도둑
+          img.src = "images/thief-normal.png";
         }
       });
       activeIndex = null;
@@ -643,65 +678,35 @@
       visibleTimeoutId = null;
       spawnTimeoutId = null;
       score = 0;
-      combo = 0;
       lives = maxLives;
-      spawnCount = 0;
       resetCells();
       renderLives();
       scoreDisplay.textContent = "0";
-      spawnCountDisplay.textContent = "0";
       updateDifficultyLabel();
-      updateComboDisplay();
-      statusText.textContent = "도둑이 나타났다가 사라지기 전에 창문을 클릭해 잡으세요.";
+      statusText.textContent =
+        "도둑(빨간 불)은 클릭해서 잡고, 시민(파란 불)은 절대 누르지 마세요.";
     }
 
-    // ----- 점수 계산 -----
-    function getComboBonus(combo) {
-      if (combo >= 5) return 2;
-      if (combo >= 3) return 1;
-      return 0;
-    }
-
-    function handleSuccessHit(type) {
-      const baseScore = type === "fast" ? 3 : 1;
-      combo += 1;
-      const bonus = getComboBonus(combo);
-      const gained = baseScore + bonus;
-      score += gained;
-
-      playHitSound();
-
+    // ----- 점수/라이프 처리 -----
+    function addScore(delta) {
+      score += delta;
       scoreDisplay.textContent = score;
-      updateComboDisplay();
-      updateDifficultyLabel();
-
-      statusText.textContent = `적중! +${gained}점 (기본 ${baseScore} / 콤보 보너스 ${bonus})`;
     }
 
-    function handleMiss() {
-      combo = 0;
-      updateComboDisplay();
+    function loseLifeAndScore() {
+      if (lives <= 0) return;
       lives = Math.max(0, lives - 1);
       renderLives();
+      addScore(-1);
       playMissSound();
-      statusText.textContent = "놓쳤습니다! 라이프가 줄어들었습니다.";
     }
 
-    function handleWrongClick() {
-      combo = 0;
-      updateComboDisplay();
-      lives = Math.max(0, lives - 1);
-      renderLives();
-      playMissSound();
-      statusText.textContent = "틀린 창문을 클릭했습니다. 라이프가 줄어들었습니다.";
-    }
-
-    // ----- 도둑 등장 / 사라짐 -----
+    // ----- 도둑/시민 등장 -----
     function scheduleNextSpawn(delay) {
       clearTimeout(spawnTimeoutId);
       spawnTimeoutId = setTimeout(() => {
         if (gameState !== "playing") return;
-        spawnThief();
+        spawnCharacter();
       }, delay);
     }
 
@@ -713,38 +718,43 @@
       }
     }
 
-    function spawnThief() {
+    function spawnCharacter() {
       if (gameState !== "playing") return;
 
       resetCells();
 
       const diff = getDifficulty(score);
-
-      const isFast = Math.random() < diff.fastChance;
-      activeType = isFast ? "fast" : "normal";
+      const isThief = Math.random() < diff.thiefChance;
+      activeType = isThief ? "thief" : "citizen";
 
       let idx = Math.floor(Math.random() * cells.length);
       activeIndex = idx;
 
       const cell = cells[idx];
       const img = cell.querySelector(".thief-img");
-      if (isFast) {
-        cell.classList.add("active-fast");
-        if (img) img.src = "images/thief-fast.png";
-      } else {
-        cell.classList.add("active-normal");
+
+      if (activeType === "thief") {
+        cell.classList.add("type-thief");
         if (img) img.src = "images/thief-normal.png";
+      } else {
+        cell.classList.add("type-citizen");
+        if (img) img.src = "images/thief-fast.png"; // 시민용 이미지(원하시면 교체)
       }
 
-      spawnCount += 1;
-      spawnCountDisplay.textContent = spawnCount;
-
-      const visibleTime = isFast ? diff.visibleTimeFast : diff.visibleTimeNormal;
+      const visibleTime = diff.visibleTime;
 
       clearTimeout(visibleTimeoutId);
       visibleTimeoutId = setTimeout(() => {
         if (activeIndex !== null) {
-          handleMiss();
+          // 도둑을 놓치면 -1점 & 라이프 감소, 시민은 아무 변화 없음
+          if (activeType === "thief") {
+            loseLifeAndScore();
+            statusText.textContent =
+              "도둑을 놓쳤습니다! 점수와 라이프가 1씩 감소했습니다.";
+          } else {
+            statusText.textContent =
+              "시민이 무사히 지나갔습니다. 점수 변화는 없습니다.";
+          }
           checkGameOverOrContinue();
         }
       }, visibleTime);
@@ -757,9 +767,8 @@
       gameState = "playing";
       startBtn.classList.add("btn-hidden");
       retryBtn.classList.add("btn-hidden");
-      statusText.textContent = "도둑이 나타나면 바로 클릭하세요. 실수하면 라이프가 줄어듭니다.";
       playBgm();
-      spawnThief();
+      spawnCharacter();
     }
 
     function endGame() {
@@ -774,6 +783,8 @@
     }
 
     function checkGameOverOrContinue() {
+      activeIndex = null;
+      activeType = null;
       if (lives <= 0) {
         endGame();
       } else {
@@ -783,29 +794,39 @@
 
     // ----- 엔딩 분기 -----
     function getEndingInfo(score) {
-      let title, msg, rank;
-      if (score < 10) {
-        title = "도둑잡기에 실패했습니다.";
-        msg = "도시가 완전히 도둑 소굴이 되었습니다. 다음에는 좀 더 빠르게 반응해 보세요.";
+      let title, msg, rank, imgSrc;
+      if (score < 0) {
+        title = "도둑잡기에 실패했습니다";
+        msg = "집이 완전히 도둑 소굴이 되었습니다. 다음에는 시민을 더 잘 구별해 보세요.";
         rank = "F";
+        imgSrc = "images/thief-normal.png";
+      } else if (score < 10) {
+        title = "아슬아슬하게 집을 지켰습니다";
+        msg = "몇몇 도둑을 놓쳤지만, 큰 피해는 막았습니다. 반응 속도를 조금만 더 끌어올려 볼까요?";
+        rank = "D";
+        imgSrc = "images/thief-normal.png";
       } else if (score < 20) {
-        title = "아깝게 놓쳤습니다.";
-        msg = "몇 명의 도둑은 잡았지만, 아직도 거리는 위험합니다. 조금만 더 연습해 볼까요?";
+        title = "경비원으로 합격입니다";
+        msg = "도둑과 시민을 꽤 잘 구분해냈습니다. 집을 지키는 데 크게 기여했습니다.";
         rank = "C";
+        imgSrc = "images/thief-fast.png";
       } else if (score < 30) {
-        title = "도시는 조금 더 안전해졌습니다.";
-        msg = "도둑들을 꽤 많이 잡았습니다. 시민들이 안도하고 있습니다.";
+        title = "오늘의 히어로!";
+        msg = "대부분의 도둑을 검거했습니다. 시민들이 박수치고 있습니다.";
         rank = "B";
+        imgSrc = "images/thief-fast.png";
       } else if (score < 40) {
-        title = "오늘의 히어로입니다!";
-        msg = "대부분의 도둑을 검거했습니다. 사람들의 환호성이 들리는 것 같아요.";
+        title = "전설적인 경비대장";
+        msg = "도둑들은 더 이상 이 집을 노리지 않을 겁니다.";
         rank = "A";
+        imgSrc = "images/thief-fast.png";
       } else {
-        title = "전설의 도둑잡이 탄생!";
-        msg = "완벽한 수사였습니다. 당신의 이름은 전설로 기록될 것입니다.";
+        title = "신화급 도둑 사냥꾼";
+        msg = "당신의 이름은 이 대저택의 전설로 남게 되었습니다.";
         rank = "S";
+        imgSrc = "images/thief-fast.png";
       }
-      return { title, msg, rank };
+      return { title, msg, rank, imgSrc };
     }
 
     function showEndingModal() {
@@ -817,6 +838,7 @@
       modalScore.textContent =
         `최종 점수: ${score}점 (최고 기록: ${bestScore}점${bestUpdated ? " - 기록 갱신!" : ""})`;
       modalMsg.textContent = ending.msg;
+      endingImage.src = ending.imgSrc;
       shareHint.textContent = "";
 
       overlay.classList.add("visible");
@@ -897,13 +919,25 @@
         const idx = Number(cell.getAttribute("data-index"));
 
         if (activeIndex !== null && idx === activeIndex) {
-          clearTimeout(visibleTimeoutId);
-          handleSuccessHit(activeType);
-          activeIndex = null;
-          activeType = null;
+          // 활성 창을 클릭한 경우
+          if (activeType === "thief") {
+            // 도둑 클릭: +1점
+            addScore(1);
+            playHitSound();
+            statusText.textContent =
+              "도둑을 잡았습니다! 점수 +1점.";
+          } else if (activeType === "citizen") {
+            // 시민 클릭: -1점 & 라이프 감소
+            loseLifeAndScore();
+            statusText.textContent =
+              "시민을 잘못 클릭했습니다! 점수와 라이프가 1씩 감소했습니다.";
+          }
           checkGameOverOrContinue();
         } else {
-          handleWrongClick();
+          // 활성 창이 아닌 곳을 클릭 → 실수로 처리
+          loseLifeAndScore();
+          statusText.textContent =
+            "빈 창문을 클릭했습니다. 실수로 인한 경고! 점수와 라이프가 1씩 감소했습니다.";
           if (lives <= 0) {
             endGame();
           }
@@ -911,10 +945,9 @@
       });
     });
 
-    // 초기 상태 렌더링
+    // 초기 상태
     renderLives();
     updateDifficultyLabel();
-    updateComboDisplay();
   </script>
 </body>
 </html>

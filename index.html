@@ -12,8 +12,8 @@
     }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f172a, #020617 60%);
-      color: #e5e7eb;
+      background: #f3f4f6; /* 밝은 배경 */
+      color: #111827;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -23,10 +23,10 @@
     .game-container {
       width: 100%;
       max-width: 420px;
-      background: rgba(15, 23, 42, 0.95);
+      background: #ffffff;
       border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
       padding: 16px 18px 18px;
       position: relative;
       overflow: hidden;
@@ -46,10 +46,11 @@
     .title {
       font-size: 20px;
       font-weight: 700;
+      color: #111827;
     }
     .subtitle {
       font-size: 11px;
-      color: #9ca3af;
+      color: #6b7280;
     }
     .status-box {
       text-align: right;
@@ -61,12 +62,12 @@
     }
     .status-box span.value {
       font-weight: 600;
-      color: #e5e7eb;
+      color: #111827;
     }
     .combo-tag {
       margin-top: 2px;
       font-size: 11px;
-      color: #fbbf24;
+      color: #b45309;
       font-weight: 600;
       min-height: 14px;
     }
@@ -80,30 +81,30 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       padding: 10px;
-      background: radial-gradient(circle at top, #020617, #020617 40%, #000 100%);
+      background: #e5e7eb;
       border-radius: 16px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
+      border: 1px solid #d1d5db;
     }
     .cell {
       position: relative;
       aspect-ratio: 1 / 1;
       border-radius: 10px;
-      background: linear-gradient(145deg, #020617, #0b1220);
-      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: linear-gradient(145deg, #e5e7eb, #f9fafb);
+      border: 1px solid #d1d5db;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.06s ease, box-shadow 0.06s ease, border-color 0.1s ease;
     }
     .cell:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.7);
-      border-color: rgba(148, 163, 184, 0.8);
+      box-shadow: 0 4px 10px rgba(148, 163, 184, 0.5);
+      border-color: #9ca3af;
     }
     .window-inner {
       position: absolute;
       inset: 3px;
       border-radius: 7px;
-      background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
+      background: linear-gradient(to bottom, #dbeafe 0%, #eff6ff 40%, #e5e7eb 100%);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -114,14 +115,14 @@
       position: absolute;
       inset: 0;
       border-radius: 7px;
-      box-shadow: inset 0 0 20px rgba(15, 23, 42, 0.9);
+      box-shadow: inset 0 0 16px rgba(148, 163, 184, 0.8);
       opacity: 0.9;
     }
     .window-frame {
       position: absolute;
       inset: 0;
       border-radius: 7px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.8);
     }
     .window-bar {
       position: absolute;
@@ -131,7 +132,7 @@
     .window-bar::after {
       content: "";
       position: absolute;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(148, 163, 184, 0.9);
     }
     .window-bar::before {
       width: 1px;
@@ -146,7 +147,6 @@
       transform: translateY(-0.5px);
     }
 
-    /* 도둑 이미지 컨테이너 */
     .thief {
       position: relative;
       width: 100%;
@@ -162,7 +162,7 @@
       transform: translateY(100%);
       opacity: 0;
       transition: transform 0.12s ease-out, opacity 0.12s ease-out;
-      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.9));
+      filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.5));
     }
     .cell.active-normal .thief-img {
       opacity: 1;
@@ -173,10 +173,10 @@
       transform: translateY(5%);
     }
     .cell.active-normal .window-glass {
-      box-shadow: inset 0 0 22px rgba(59, 130, 246, 0.9);
+      box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.9);
     }
     .cell.active-fast .window-glass {
-      box-shadow: inset 0 0 24px rgba(248, 113, 113, 0.95);
+      box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.9);
     }
 
     .info-panel {
@@ -184,10 +184,10 @@
       font-size: 11px;
       display: flex;
       justify-content: space-between;
-      color: #9ca3af;
+      color: #6b7280;
     }
     .info-panel span strong {
-      color: #e5e7eb;
+      color: #111827;
     }
 
     .controls {
@@ -199,7 +199,7 @@
       font-size: 11px;
     }
     .status-text {
-      color: #9ca3af;
+      color: #6b7280;
       line-height: 1.4;
       min-height: 30px;
     }
@@ -214,27 +214,27 @@
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
-      background: #1d4ed8;
-      color: #e5e7eb;
-      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+      background: #2563eb;
+      color: #f9fafb;
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.35);
       transition: background 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease, opacity 0.1s ease;
     }
     button:hover {
-      background: #2563eb;
+      background: #1d4ed8;
       transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.5);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
     }
     button:active {
       transform: translateY(0);
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
     }
     .btn-secondary {
-      background: #374151;
-      box-shadow: 0 6px 12px rgba(15, 23, 42, 0.8);
+      background: #6b7280;
+      box-shadow: 0 6px 12px rgba(75, 85, 99, 0.4);
     }
     .btn-secondary:hover {
       background: #4b5563;
-      box-shadow: 0 10px 18px rgba(15, 23, 42, 0.9);
+      box-shadow: 0 10px 18px rgba(75, 85, 99, 0.5);
     }
     .btn-hidden {
       opacity: 0;
@@ -245,7 +245,7 @@
     .overlay {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(0, 0, 0, 0.95));
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.85));
       display: none;
       align-items: center;
       justify-content: center;
@@ -258,30 +258,31 @@
     .modal {
       width: 100%;
       max-width: 320px;
-      background: rgba(15, 23, 42, 0.98);
+      background: #ffffff;
       border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
       padding: 16px 16px 14px;
     }
     .modal-title {
       font-size: 17px;
       font-weight: 700;
       margin-bottom: 4px;
+      color: #111827;
     }
     .modal-rank {
       font-size: 12px;
-      color: #facc15;
+      color: #b45309;
       margin-bottom: 8px;
     }
     .modal-score {
       font-size: 13px;
-      color: #e5e7eb;
+      color: #111827;
       margin-bottom: 6px;
     }
     .modal-msg {
       font-size: 12px;
-      color: #9ca3af;
+      color: #4b5563;
       margin-bottom: 10px;
       line-height: 1.5;
     }
@@ -299,7 +300,7 @@
     .share-hint {
       margin-top: 4px;
       font-size: 10px;
-      color: #6b7280;
+      color: #9ca3af;
       min-height: 12px;
     }
 
@@ -330,9 +331,8 @@
     <div class="combo-tag hidden" id="comboTag">COMBO x0</div>
 
     <div class="grid" id="grid">
-      <!-- 9개 창문 -->
-      <!-- 공통 구조: thief-normal.png로 시작 -->
-      <!-- data-index만 0~8로 다르게 -->
+      <!-- 9개 창문, 기본 이미지는 일반 도둑 -->
+      <!-- 파일 경로: images/thief-normal.png (소문자/확장자 확인) -->
       <!-- 0 -->
       <div class="cell" data-index="0">
         <div class="window-inner">
@@ -467,6 +467,12 @@
         <div class="share-hint" id="shareHint"></div>
       </div>
     </div>
+
+    <!-- 오디오 (BGM + 효과음) -->
+    <!-- 파일 경로: /audio/bgm.mp3, hit.mp3, miss.mp3 -->
+    <audio id="bgm" src="audio/bgm.mp3" loop></audio>
+    <audio id="sfxHit" src="audio/hit.mp3"></audio>
+    <audio id="sfxMiss" src="audio/miss.mp3"></audio>
   </div>
 
   <script>
@@ -505,6 +511,33 @@
     const shareHint = document.getElementById("shareHint");
 
     const cells = Array.from(document.querySelectorAll(".cell"));
+
+    // 오디오
+    const bgm = document.getElementById("bgm");
+    const sfxHit = document.getElementById("sfxHit");
+    const sfxMiss = document.getElementById("sfxMiss");
+
+    function playBgm() {
+      if (!bgm) return;
+      bgm.volume = 0.4;
+      bgm.currentTime = 0;
+      bgm.play().catch(() => {});
+    }
+    function stopBgm() {
+      if (!bgm) return;
+      bgm.pause();
+      bgm.currentTime = 0;
+    }
+    function playHitSound() {
+      if (!sfxHit) return;
+      sfxHit.currentTime = 0;
+      sfxHit.play().catch(() => {});
+    }
+    function playMissSound() {
+      if (!sfxMiss) return;
+      sfxMiss.currentTime = 0;
+      sfxMiss.play().catch(() => {});
+    }
 
     // ----- 로컬 최고 기록 -----
     function loadBestScore() {
@@ -597,7 +630,7 @@
         cell.classList.remove("active-normal", "active-fast");
         const img = cell.querySelector(".thief-img");
         if (img) {
-          img.src = "images/thief-normal.png";
+          img.src = "images/thief-normal.png"; // 기본 이미지는 일반 도둑
         }
       });
       activeIndex = null;
@@ -636,6 +669,8 @@
       const gained = baseScore + bonus;
       score += gained;
 
+      playHitSound();
+
       scoreDisplay.textContent = score;
       updateComboDisplay();
       updateDifficultyLabel();
@@ -648,6 +683,7 @@
       updateComboDisplay();
       lives = Math.max(0, lives - 1);
       renderLives();
+      playMissSound();
       statusText.textContent = "놓쳤습니다! 라이프가 줄어들었습니다.";
     }
 
@@ -656,6 +692,7 @@
       updateComboDisplay();
       lives = Math.max(0, lives - 1);
       renderLives();
+      playMissSound();
       statusText.textContent = "틀린 창문을 클릭했습니다. 라이프가 줄어들었습니다.";
     }
 
@@ -721,6 +758,7 @@
       startBtn.classList.add("btn-hidden");
       retryBtn.classList.add("btn-hidden");
       statusText.textContent = "도둑이 나타나면 바로 클릭하세요. 실수하면 라이프가 줄어듭니다.";
+      playBgm();
       spawnThief();
     }
 
@@ -729,6 +767,7 @@
       clearTimeout(visibleTimeoutId);
       clearTimeout(spawnTimeoutId);
       resetCells();
+      stopBgm();
       startBtn.classList.remove("btn-hidden");
       retryBtn.classList.remove("btn-hidden");
       showEndingModal();

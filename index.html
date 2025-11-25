@@ -402,6 +402,8 @@
             <div><span class="label">점수</span> <span class="value" id="scoreDisplay">0</span></div>
              <div><span class="label">최고</span> <span class="value" id="bestDisplay">0</span></div>
             <div><span class="label">라이프</span> <span class="value" id="lifeDisplay">♥♥♥</span></div>
+            <div><span class="label">콤보</span> <span class="value" id="comboDisplay">0</span></div>
+
             <div class="difficulty-line">
               <span class="label">난이도</span>
               <span class="value" id="levelDisplay">연습 구간</span>
@@ -553,6 +555,8 @@
     let gameState = "ready"; // ready, playing, gameover
     let score = 0;
     let bestScore = 0;
+    let combo = 0;
+let maxCombo = 0; 
     let lives = 3;
     const maxLives = 3;
 
@@ -566,6 +570,7 @@
     const bestDisplay = document.getElementById("bestDisplay");
     const lifeDisplay = document.getElementById("lifeDisplay");
     const levelDisplay = document.getElementById("levelDisplay");
+    const comboDisplay = document.getElementById("comboDisplay"); 
     const statusText = document.getElementById("statusText");
     const startBtn = document.getElementById("startBtn");
     const retryBtn = document.getElementById("retryBtn");
@@ -639,37 +644,37 @@
       if (score < 5) {
         return {
           label: "연습 구간",
-          spawnInterval: 900,
-          visibleTime: 800,
-          thiefChance: 0.6
+          spawnInterval: 800,
+          visibleTime: 650,
+          thiefChance: 0.65
         };
       } else if (score < 15) {
         return {
           label: "초급",
-          spawnInterval: 850,
-          visibleTime: 700,
-          thiefChance: 0.65
+          spawnInterval: 720,
+          visibleTime: 550,
+          thiefChance: 0.7
         };
       } else if (score < 25) {
         return {
           label: "중급",
-          spawnInterval: 800,
-          visibleTime: 600,
-          thiefChance: 0.7
+          spawnInterval: 650,
+          visibleTime: 480,
+          thiefChance: 0.75
         };
       } else if (score < 35) {
         return {
           label: "상급",
-          spawnInterval: 750,
-          visibleTime: 520,
-          thiefChance: 0.75
+          spawnInterval: 600,
+          visibleTime: 420,
+          thiefChance: 0.8
         };
       } else {
         return {
           label: "전설의 구간",
-          spawnInterval: 700,
-          visibleTime: 450,
-          thiefChance: 0.8
+          spawnInterval: 550,
+          visibleTime: 360,
+          thiefChance: 0.85
         };
       }
     }
@@ -702,6 +707,7 @@
       resetCells();
       renderLives();
       scoreDisplay.textContent = "0";
+      if (comboDisplay) comboDisplay.textContent = "0";
       updateDifficultyLabel();
       statusText.textContent =
         "도둑(빨간 불)은 클릭해서 잡고, 시민(파란 불)은 절대 누르지 마세요.";
@@ -713,11 +719,29 @@
       scoreDisplay.textContent = score;
     }
 
+    function resetCombo() {
+  combo = 0;
+  if (comboDisplay) {
+    comboDisplay.textContent = "0";
+  }
+}
+
+function increaseCombo() {
+  combo += 1;
+  if (comboDisplay) {
+    comboDisplay.textContent = combo + "연속";
+  }
+  if (combo > maxCombo) {
+    maxCombo = combo;
+  }
+}
+    
     function loseLifeAndScore() {
       if (lives <= 0) return;
       lives = Math.max(0, lives - 1);
       renderLives();
       addScore(-1);
+       resetCombo(); 
       playMissSound();
     }
 
@@ -951,9 +975,15 @@ function getEndingInfo(score) {
           if (activeType === "thief") {
             // 도둑 클릭: +1점
             addScore(1);
+            increaseCombo();
             playHitSound();
-            statusText.textContent =
-              "도둑을 잡았습니다! 점수 +1점.";
+            if (combo >= 2) {
+    statusText.textContent =
+      `도둑을 잡았습니다! ${combo}연속 콤보!`;
+  } else {
+    statusText.textContent =
+      "도둑을 잡았습니다! 점수 +1점.";
+  }
           } else if (activeType === "citizen") {
             // 시민 클릭: -1점 & 라이프 감소
             loseLifeAndScore();

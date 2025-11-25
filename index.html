@@ -231,7 +231,8 @@
     .status-text {
       color: #6b7280;
       line-height: 1.4;
-      min-height: 30px;
+      /* 문장이 2~3줄이어도 한 번에 들어갈 정도로 넉넉하게 고정 */
+  min-height: 60px;    /* ✅ 기존 30px → 60px로 늘리기 */
     }
     .buttons {
       display: flex;
@@ -531,7 +532,7 @@
         </div>
 
         <!-- 오디오 (BGM + 효과음) -->
-        <audio id="bgm" src="audio/bgm.mp3" loop controls></audio>
+        <audio id="bgm" src="audio/bgm.mp3" loop></audio>
         <audio id="sfxHit" src="audio/hit.mp3"></audio>
         <audio id="sfxMiss" src="audio/miss.mp3"></audio>
       </div>

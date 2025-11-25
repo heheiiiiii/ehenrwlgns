@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>도둑을 잡아라</title>
+  <title>임도둑을 잡아라</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
@@ -792,42 +792,50 @@
       }
     }
 
-    // ----- 엔딩 분기 -----
-    function getEndingInfo(score) {
-      let title, msg, rank, imgSrc;
-      if (score < 0) {
-        title = "도둑잡기에 실패했습니다";
-        msg = "집이 완전히 도둑 소굴이 되었습니다. 다음에는 시민을 더 잘 구별해 보세요.";
-        rank = "F";
-        imgSrc = "images/thief-normal.png";
-      } else if (score < 10) {
-        title = "아슬아슬하게 집을 지켰습니다";
-        msg = "몇몇 도둑을 놓쳤지만, 큰 피해는 막았습니다. 반응 속도를 조금만 더 끌어올려 볼까요?";
-        rank = "D";
-        imgSrc = "images/thief-normal.png";
-      } else if (score < 20) {
-        title = "경비원으로 합격입니다";
-        msg = "도둑과 시민을 꽤 잘 구분해냈습니다. 집을 지키는 데 크게 기여했습니다.";
-        rank = "C";
-        imgSrc = "images/thief-fast.png";
-      } else if (score < 30) {
-        title = "오늘의 히어로!";
-        msg = "대부분의 도둑을 검거했습니다. 시민들이 박수치고 있습니다.";
-        rank = "B";
-        imgSrc = "images/thief-fast.png";
-      } else if (score < 40) {
-        title = "전설적인 경비대장";
-        msg = "도둑들은 더 이상 이 집을 노리지 않을 겁니다.";
-        rank = "A";
-        imgSrc = "images/thief-fast.png";
-      } else {
-        title = "신화급 도둑 사냥꾼";
-        msg = "당신의 이름은 이 대저택의 전설로 남게 되었습니다.";
-        rank = "S";
-        imgSrc = "images/thief-fast.png";
-      }
-      return { title, msg, rank, imgSrc };
-    }
+   // ----- 엔딩 분기 (S ~ F, 7단계) -----
+function getEndingInfo(score) {
+  // 점수 구간은 필요에 따라 자유롭게 조정하셔도 됩니다.
+  let title, msg, rank, imgSrc;
+
+  if (score < 5) {
+    rank = "F";
+    imgSrc = "images/ending-f.png";
+    title = "도둑잡기에 실패했습니다";
+    msg = "집이 완전히 도둑 소굴이 되었습니다. 다음에는 시민과 도둑을 더 확실하게 구분해 보세요.";
+  } else if (score < 10) {
+    rank = "E";
+    imgSrc = "images/ending-e.png";
+    title = "위태로운 밤";
+    msg = "몇몇 도둑은 잡았지만, 여전히 집이 불안합니다. 반응 속도를 조금만 더 올려볼까요?";
+  } else if (score < 18) {
+    rank = "D";
+    imgSrc = "images/ending-d.png";
+    title = "아슬아슬하게 지켜낸 집";
+    msg = "큰 피해는 막았지만, 도둑들이 다시 올 것 같습니다. 더 집중해 보세요.";
+  } else if (score < 26) {
+    rank = "C";
+    imgSrc = "images/ending-c.png";
+    title = "경비원으로 합격입니다";
+    msg = "도둑과 시민을 꽤 잘 구분해냈습니다. 집을 지키는 데 큰 도움을 줬습니다.";
+  } else if (score < 34) {
+    rank = "B";
+    imgSrc = "images/ending-b.png";
+    title = "오늘의 히어로!";
+    msg = "대부분의 도둑을 검거했습니다. 주민들이 박수치고 있습니다.";
+  } else if (score < 45) {
+    rank = "A";
+    imgSrc = "images/ending-a.png";
+    title = "전설적인 경비대장";
+    msg = "도둑들은 더 이상 이 집을 노리지 않을 겁니다. 완벽에 가까운 수비였습니다.";
+  } else {
+    rank = "S";
+    imgSrc = "images/ending-s.png";
+    title = "신화급 도둑 사냥꾼";
+    msg = "당신의 이름은 이 대저택의 전설로 남게 되었습니다.";
+  }
+
+  return { title, msg, rank, imgSrc };
+}
 
     function showEndingModal() {
       const bestUpdated = saveBestScore();
